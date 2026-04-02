@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Environnement virtuel
+venv/
+env/
+.venv/
+
+# IDE / OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Claude Code
+.claude/
+
+# Données volumineuses (> 100 Mo, limite GitHub)
+Données/postings.csv
+
+# docs/ - uniquement les PDF finaux, pas les sources LaTeX
+docs/**/*.tex
+docs/**/*.aux
+docs/**/*.log
+docs/**/*.out
+docs/**/*.toc
+docs/**/*.nav
+docs/**/*.snm
+docs/**/*.fls
+docs/**/*.fdb_latexmk
+docs/**/*.synctex.gz
+docs/**/main.pdf
+docs/**/images/
+docs/**/Page_de_presentation_*.png
+docs/**/notes_oral.md
+docs/presentation/
