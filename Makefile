@@ -6,7 +6,7 @@
 PYTHON     = venv/bin/python
 PIP        = venv/bin/pip
 JUPYTER    = venv/bin/jupyter
-NOTEBOOK   = notebooks/01_clustering_offres_emploi.ipynb
+NOTEBOOK   = notebooks/01_clustering_offres_emploi_executed.ipynb
 
 .PHONY: help venv install notebook run clean clean-outputs docs tree
 
@@ -44,16 +44,32 @@ notebook: install ## Lance Jupyter Notebook sur le notebook principal
 run: install ## Exécute le notebook en non-interactif (reproductibilité)
 	@echo "Exécution du notebook..."
 	$(JUPYTER) nbconvert --to notebook --execute \
-		--output 01_clustering_offres_emploi.ipynb \
+		--output 01_clustering_offres_emploi_executed.ipynb \
 		$(NOTEBOOK)
 	@echo "Exécution terminée — sorties mises à jour."
 
 # ---- Documentation ---------------------------------------------------------
 
-docs: ## Compile la documentation LaTeX (docs/main.tex → main.pdf)
-	cd docs && pdflatex -interaction=nonstopmode main.tex
-	cd docs && pdflatex -interaction=nonstopmode main.tex
-	@echo "Documentation compilée → docs/main.pdf"
+# Documents LaTeX à compiler : un docs/<nom>/main.tex par document.
+# (présentation et cahier des charges exclus : pas de chaîne main.tex → IED ici)
+DOC_DIRS = rapport technique utilisateur
+
+docs: ## Compile les documents LaTeX (rapport, technique, utilisateur) en PDF
+	@for d in $(DOC_DIRS); do \
+		echo "Compilation de docs/$$d ..." ; \
+		( cd docs/$$d && \
+		  pdflatex -interaction=nonstopmode -halt-on-error main.tex >/dev/null && \
+		  pdflatex -interaction=nonstopmode -halt-on-error main.tex >/dev/null ) \
+		  || { echo "  ÉCHEC — voir docs/$$d/main.log" ; exit 1 ; } ; \
+		ied=$$(ls docs/$$d/IED-M1-*.pdf 2>/dev/null | head -n1) ; \
+		if [ -n "$$ied" ]; then \
+			cp -f docs/$$d/main.pdf "$$ied" ; \
+			echo "  OK → $$ied" ; \
+		else \
+			echo "  OK → docs/$$d/main.pdf (aucun livrable IED-M1-*.pdf à mettre à jour)" ; \
+		fi ; \
+	done
+	@echo "Documentation compilée."
 
 # ---- Nettoyage -------------------------------------------------------------
 

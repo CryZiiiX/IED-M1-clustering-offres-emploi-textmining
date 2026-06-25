@@ -14,7 +14,9 @@ Le pipeline repose sur une vectorisation TF-IDF, un clustering K-Means
 (k=8) et une validation externe via les métadonnées LinkedIn (secteurs
 d'activité et compétences).
 
-Corpus : ~124 000 offres en anglais (~123 700 après filtrage).
+Corpus : ~124 000 offres en anglais (~123 700 après filtrage), dont un
+échantillon aléatoire de 30 000 offres est utilisé pour le clustering
+(graine fixe pour la reproductibilité).
 Temps d'exécution : environ 5 minutes.
 
 ## Structure du projet
@@ -89,7 +91,9 @@ make run
 
 ## Données
 
-Le dataset principal (`postings.csv`) provient de LinkedIn
+Le dataset principal (`postings.csv`) provient du dataset
+*LinkedIn Job Postings (2023)* publié sur Kaggle
+(https://www.kaggle.com/datasets/arshkon/linkedin-job-postings)
 et n'est pas versionné (516 Mo).
 Champs utilisés : `title` et `description`.
 
