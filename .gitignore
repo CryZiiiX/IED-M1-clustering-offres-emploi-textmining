@@ -39,6 +39,6 @@ docs/**/*.fdb_latexmk
 docs/**/*.synctex.gz
 docs/**/main.pdf
 docs/**/images/
-docs/**/Page_de_presentation_*.png
+docs/**/Page_de_presentation*.png
 docs/**/notes_oral.md
 docs/presentation/
