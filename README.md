@@ -1,8 +1,8 @@
+# Clustering d'offres d'emploi par fouille de données textuelles
+
 <p align="center">
   <img src="docs/rapport/Page_de_presentation_rapport.png" alt="Page de présentation du rapport" width="450">
 </p>
-
-# Clustering d'offres d'emploi par fouille de données textuelles
 
 Projet de Master 1 Informatique, spécialisation Big Data, Université Paris 8.
 UE Fouille de données textuelles.
