@@ -1,7 +1,9 @@
-# =============================================================================
-# Makefile — Clustering d'offres d'emploi par fouille de données textuelles
-# M1 Informatique Big Data — Fouille de données textuelles
-# =============================================================================
+# Nom : Makefile
+# Rôle : Commandes principales pour installer, exécuter et nettoyer le projet.
+# Auteur : Maxime BRONNY
+# Version : V1
+# Cadre : UE Fouille de données textuelles - Master 1 Informatique Big Data - Université Paris 8
+# Usage : Exécuter les commandes avec make depuis la racine du projet.
 
 PYTHON     = venv/bin/python
 PIP        = venv/bin/pip
@@ -26,7 +28,7 @@ venv: ## Crée l'environnement virtuel
 	@if [ ! -d venv ]; then \
 		echo "Création de l'environnement virtuel..." ; \
 		python3 -m venv venv ; \
-		echo "OK — venv créé." ; \
+		echo "OK - venv créé." ; \
 	else \
 		echo "venv existe déjà." ; \
 	fi
@@ -46,7 +48,7 @@ run: install ## Exécute le notebook en non-interactif (reproductibilité)
 	$(JUPYTER) nbconvert --to notebook --execute \
 		--output 01_clustering_offres_emploi_executed.ipynb \
 		$(NOTEBOOK)
-	@echo "Exécution terminée — sorties mises à jour."
+	@echo "Exécution terminée - sorties mises à jour."
 
 # ---- Documentation ---------------------------------------------------------
 
@@ -60,7 +62,7 @@ docs: ## Compile les documents LaTeX (rapport, technique, utilisateur) en PDF
 		( cd docs/$$d && \
 		  pdflatex -interaction=nonstopmode -halt-on-error main.tex >/dev/null && \
 		  pdflatex -interaction=nonstopmode -halt-on-error main.tex >/dev/null ) \
-		  || { echo "  ÉCHEC — voir docs/$$d/main.log" ; exit 1 ; } ; \
+		  || { echo "  ÉCHEC - voir docs/$$d/main.log" ; exit 1 ; } ; \
 		ied=$$(ls docs/$$d/IED-M1-*.pdf 2>/dev/null | head -n1) ; \
 		if [ -n "$$ied" ]; then \
 			cp -f docs/$$d/main.pdf "$$ied" ; \

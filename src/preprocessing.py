@@ -1,8 +1,10 @@
 """
-Fonctions de prétraitement textuel pour le clustering d'offres d'emploi.
-
-Module utilisé par le notebook principal pour nettoyer les textes
-avant vectorisation TF-IDF et clustering.
+Nom : src/preprocessing.py
+Rôle : Fonctions de nettoyage et de préparation des textes avant vectorisation.
+Auteur : Maxime BRONNY
+Version : V1
+Cadre : UE Fouille de données textuelles - Master 1 Informatique Big Data - Université Paris 8
+Usage : Module importé par le notebook principal (et le script de figures) pour préparer le corpus textuel.
 """
 
 import re
@@ -51,28 +53,43 @@ STOP_WORDS = STOP_WORDS | EEO_STOPWORDS
 
 
 def clean_html(text):
-    """Supprime les balises HTML et les entités HTML courantes."""
+    """Supprime les balises HTML et les entités courantes d'un texte.
+
+    Args:
+        text: Texte brut extrait d'une offre d'emploi.
+
+    Returns:
+        Texte sans balises ni entités HTML.
+    """
     text = re.sub(r'<[^>]+>', ' ', text)
     text = re.sub(r'&[a-z]+;', ' ', text)
     return text
 
 
 def remove_boilerplate(text):
-    """Supprime les blocs de texte boilerplate légal/RH non discriminants."""
+    """Retire les blocs de texte juridique et RH récurrents (boilerplate non discriminant).
+
+    Args:
+        text: Texte d'une offre d'emploi.
+
+    Returns:
+        Texte débarrassé de ces mentions standardisées.
+    """
     return _BOILERPLATE_RE.sub(' ', text)
 
 
 def clean_text(text):
-    """
-    Pipeline de nettoyage textuel complet :
-    1. Suppression du HTML et entités
-    2. Suppression du boilerplate légal/RH
-    3. Mise en minuscules
-    4. Suppression des caractères non alphabétiques
-    5. Tokenisation
-    6. Suppression des stopwords
-    7. Lemmatisation
-    8. Suppression des tokens trop courts (< 3 caractères)
+    """Applique le pipeline de nettoyage complet à un texte d'offre.
+
+    Enchaîne la suppression du HTML, le passage en minuscules, le retrait du
+    boilerplate, la suppression des caractères non alphabétiques, le filtrage des
+    stopwords (anglais et propres au domaine) et la lemmatisation.
+
+    Args:
+        text: Texte brut (titre et description concaténés).
+
+    Returns:
+        Texte nettoyé prêt pour la vectorisation, ou chaîne vide si l'entrée est invalide.
     """
     if not isinstance(text, str) or len(text.strip()) == 0:
         return ""
@@ -89,9 +106,15 @@ def clean_text(text):
 
 
 def build_corpus_text(row):
-    """
-    Construit le texte exploitable en concaténant titre et description.
-    Le titre est répété pour renforcer son poids sémantique.
+    """Construit le texte à vectoriser à partir du titre et de la description d'une offre.
+
+    Le titre est répété pour renforcer son poids dans la représentation.
+
+    Args:
+        row: Ligne du DataFrame (offre) contenant les champs 'title' et 'description'.
+
+    Returns:
+        Texte consolidé de l'offre.
     """
     title = str(row.get('title', '')) if row.get('title') is not None else ''
     description = str(row.get('description', '')) if row.get('description') is not None else ''

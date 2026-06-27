@@ -43,5 +43,7 @@ docs/**/*.synctex.gz
 docs/**/main.pdf
 docs/**/images/
 docs/**/Page_de_presentation*.png
+# Exception : la couverture du rapport sert de bannière au README
+!docs/rapport/Page_de_presentation_rapport.png
 docs/**/notes_oral.md
 docs/presentation/

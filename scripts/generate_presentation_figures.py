@@ -1,9 +1,11 @@
 """
-Génère des figures optimisées pour la projection en diaporama.
-Polices plus grandes, meilleur contraste, meilleure lisibilité.
-
-Usage (depuis la racine du projet, avec le venv activé) :
-    python scripts/generate_presentation_figures.py
+Nom : scripts/generate_presentation_figures.py
+Rôle : Génération des figures utilisées dans les supports de présentation.
+Auteur : Maxime BRONNY
+Version : V1
+Cadre : UE Fouille de données textuelles - Master 1 Informatique Big Data - Université Paris 8
+Usage : Script exécuté depuis la racine du projet (venv activé) pour produire des figures dans outputs/ :
+        python scripts/generate_presentation_figures.py
 """
 
 import sys
@@ -24,7 +26,7 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from src.preprocessing import clean_text, build_corpus_text
 
-# --- Style global pour présentation ---
+# Style des figures, optimisé pour la lecture en diaporama.
 plt.rcParams.update({
     'font.size': 14,
     'axes.titlesize': 18,
@@ -46,8 +48,18 @@ K_RANGE = range(2, 16)
 BEST_K = 8
 
 
+# ============================================================
+# Préparation des données et clustering
+# ============================================================
+
 def load_and_prepare():
-    """Charge et prépare les données (même pipeline que le notebook)."""
+    """Charge le corpus, échantillonne et applique le prétraitement textuel.
+
+    Reprend le même pipeline que le notebook (échantillon de N_SAMPLE offres, graine SEED).
+
+    Returns:
+        DataFrame des offres échantillonnées avec la colonne de texte nettoyé.
+    """
     data_dir = os.path.join(os.path.dirname(__file__), '..', 'Données')
 
     print("Chargement des données...")
@@ -66,7 +78,14 @@ def load_and_prepare():
 
 
 def vectorize(df):
-    """Vectorisation TF-IDF."""
+    """Vectorise les textes nettoyés avec TF-IDF.
+
+    Args:
+        df: DataFrame contenant la colonne 'clean_text'.
+
+    Returns:
+        Tuple (matrice TF-IDF creuse, vectoriseur ajusté).
+    """
     print("Vectorisation TF-IDF...")
     vectorizer = TfidfVectorizer(
         max_features=10_000,
@@ -80,7 +99,14 @@ def vectorize(df):
 
 
 def compute_elbow_silhouette(X):
-    """Calcule inertie et silhouette pour k = 2..15."""
+    """Calcule l'inertie et le score silhouette pour chaque k de K_RANGE.
+
+    Args:
+        X: Matrice TF-IDF des documents.
+
+    Returns:
+        Tuple (liste des inerties, liste des scores silhouette).
+    """
     inertias, sil_scores = [], []
     for k in K_RANGE:
         print(f"  K-Means k={k}...")
@@ -94,7 +120,15 @@ def compute_elbow_silhouette(X):
 
 
 def cluster_final(X, df):
-    """Clustering final avec k=8."""
+    """Entraîne le K-Means final (k = BEST_K) et affecte les clusters au DataFrame.
+
+    Args:
+        X: Matrice TF-IDF des documents.
+        df: DataFrame des offres ; reçoit une colonne 'cluster'.
+
+    Returns:
+        Modèle K-Means ajusté.
+    """
     print(f"Clustering final k={BEST_K}...")
     km = KMeans(n_clusters=BEST_K, n_init=10, max_iter=300, random_state=SEED)
     df['cluster'] = km.fit_predict(X)
@@ -102,7 +136,14 @@ def cluster_final(X, df):
 
 
 def load_industries(df):
-    """Charge les secteurs d'activité LinkedIn."""
+    """Associe à chaque offre son secteur d'activité LinkedIn.
+
+    Args:
+        df: DataFrame des offres (avec la colonne 'job_id').
+
+    Returns:
+        DataFrame enrichi de la colonne 'industry_name'.
+    """
     data_dir = os.path.join(os.path.dirname(__file__), '..', 'Données')
     job_ind = pd.read_csv(os.path.join(data_dir, 'jobs', 'job_industries.csv'))
     ind_map = pd.read_csv(os.path.join(data_dir, 'mappings', 'industries.csv'))
@@ -111,10 +152,17 @@ def load_industries(df):
     return df
 
 
-# --- FIGURES ---
+# ============================================================
+# Génération des figures
+# ============================================================
 
 def fig_elbow_silhouette(inertias, sil_scores):
-    """Figure coude + silhouette, optimisée pour projection."""
+    """Trace la courbe du coude et le score silhouette, puis enregistre la figure.
+
+    Args:
+        inertias: Inerties par valeur de k.
+        sil_scores: Scores silhouette par valeur de k.
+    """
     fig, axes = plt.subplots(1, 2, figsize=(16, 6))
 
     axes[0].plot(list(K_RANGE), inertias, 'o-', color='#1a5276',
@@ -145,7 +193,11 @@ def fig_elbow_silhouette(inertias, sil_scores):
 
 
 def fig_taille_clusters(df):
-    """Taille des clusters, optimisée."""
+    """Trace la répartition des huit clusters et enregistre la figure.
+
+    Args:
+        df: DataFrame des offres avec la colonne 'cluster'.
+    """
     cluster_names = {
         0: 'Terrain', 1: 'Maintenance', 2: 'Commerce',
         3: 'Résiduel', 4: 'Santé', 5: 'IT',
@@ -178,7 +230,11 @@ def fig_taille_clusters(df):
 
 
 def fig_industries(df):
-    """Heatmap industries, optimisée pour lisibilité en projection."""
+    """Trace la heatmap secteurs x clusters et enregistre la figure.
+
+    Args:
+        df: DataFrame des offres avec les colonnes 'cluster' et 'industry_name'.
+    """
     top_industries = df['industry_name'].value_counts().head(10).index
     df_sub = df[df['industry_name'].isin(top_industries)]
     ct = pd.crosstab(df_sub['cluster'], df_sub['industry_name'])
@@ -226,9 +282,12 @@ def fig_industries(df):
     print(f"  Sauvé : {path}")
 
 
-# --- MAIN ---
+# ============================================================
+# Programme principal
+# ============================================================
 
 def main():
+    """Exécute la chaîne complète : préparation, clustering, puis génération des figures."""
     print("=" * 60)
     print("Génération des figures optimisées pour la présentation")
     print("=" * 60)
