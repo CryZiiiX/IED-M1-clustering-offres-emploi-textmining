@@ -25,6 +25,12 @@ Thumbs.db
 
 # Audits internes / fichiers de travail (non remis au rendu)
 audit/
+/AUDIT_GLOBAL_NOTATION_MASTER.md
+/AUDIT_STYLE_IA.md
+/AUDIT_FICHIERS_RENDU_FINAL.md
+
+# Support de cours tiers (matériel du professeur, hors livrable)
+docs/cours_MOODLE_Paris8/
 
 # Données volumineuses (> 100 Mo, limite GitHub)
 Données/postings.csv
