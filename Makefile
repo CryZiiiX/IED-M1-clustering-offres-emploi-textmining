@@ -79,7 +79,7 @@ clean: ## Supprime les fichiers temporaires (caches Python, checkpoints Jupyter)
 	find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
 	find . -type f -name "*.pyc" -delete 2>/dev/null || true
 	find . -type d -name ".ipynb_checkpoints" -exec rm -rf {} + 2>/dev/null || true
-	rm -f docs/*.aux docs/*.log docs/*.out docs/*.toc docs/*.fls docs/*.fdb_latexmk 2>/dev/null || true
+	find docs -type f \( -name '*.aux' -o -name '*.log' -o -name '*.out' -o -name '*.toc' -o -name '*.nav' -o -name '*.snm' -o -name '*.fls' -o -name '*.fdb_latexmk' -o -name '*.synctex.gz' \) -delete 2>/dev/null || true
 	@echo "Fichiers temporaires supprimés."
 
 clean-outputs: ## Supprime les sorties générées (outputs/)
